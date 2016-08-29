@@ -106,4 +106,6 @@ type Config struct {
 	// If this callback does not find the file at the provided path, it must return os.ErrNotExist.
 	// If this callback returns acmewrapper.ErrNotHandled, it will fallback to load file from disk.
 	LoadFileCallback func(path string) (contents []byte, err error)
+
+	HTTP01ChallengeProvider acme.ChallengeProvider
 }

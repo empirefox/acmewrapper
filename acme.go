@@ -146,8 +146,11 @@ func (w *AcmeWrapper) initACME(serverRunning bool) (err error) {
 	}
 
 	// All of the challenges are disabled EXCEPT SNI
-	w.client.ExcludeChallenges([]acme.Challenge{acme.HTTP01, acme.DNS01})
-	w.client.SetTLSAddress(w.Config.Address)
+	// HACK!!! 4 line
+	//	w.client.ExcludeChallenges([]acme.Challenge{acme.HTTP01, acme.DNS01})
+	//	w.client.SetTLSAddress(w.Config.Address)
+	w.client.ExcludeChallenges([]acme.Challenge{acme.TLSSNI01, acme.DNS01})
+	w.client.SetChallengeProvider(acme.HTTP01, w.Config.HTTP01ChallengeProvider)
 
 	// Now if we are to renew our certificate, do it now! We do this now if server is not running
 	// yet, since in this case we use the default SNI provider, which runs a custom server.
@@ -168,9 +171,10 @@ func (w *AcmeWrapper) initACME(serverRunning bool) (err error) {
 	// so that it uses our custom SNI provider. We don't want
 	// to start custom servers, but rather plug into our certificate updater once
 	// we are running. This allows cert updates to be transparent.
-	w.client.SetChallengeProvider(acme.TLSSNI01, &wrapperChallengeProvider{
-		w: w,
-	})
+	// HACK!!! 3 line
+	//	w.client.SetChallengeProvider(acme.TLSSNI01, &wrapperChallengeProvider{
+	//		w: w,
+	//	})
 
 	// If our server IS running already, then we get our certificates NOW. The difference
 	// between the above version and this one is that we use the custom provider if
